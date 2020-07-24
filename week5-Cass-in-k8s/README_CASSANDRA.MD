@@ -14,10 +14,10 @@ If at any point you need to naviagte to one of the other sections use the links 
 
 | Title  | Description | Type |
 |---|---|---|
-| Installation and prerequisites | [Section](./README.MD) | Required |
-| **Working with the Cassandra Operator** | [Section](./README_CASSANDRA.MD)  | Required |
-| Metrics in Prometheus & Grafana | [Section](./README_METRICS.MD)  | Required |
-| K8s Dashboard | [Section](./README_DASHBOARD.MD)  | Bonus |
+| Installation and prerequisites | [Instructions](./README.MD) | Required |
+| **Working with the Cassandra Operator** | [Instructions](./README_CASSANDRA.MD)  | Required |
+| Metrics in Prometheus & Grafana | [Instructions](./README_METRICS.MD)  | Required |
+| K8s Dashboard | [Instructions](./README_DASHBOARD.MD)  | Bonus |
 
 ## Exercises
 
@@ -27,6 +27,8 @@ If at any point you need to naviagte to one of the other sections use the links 
 | **2. Create a single node cluster** | [Instructions](#2-create-a-single-node-cluster)  |
 | **3. Browse your cluster** | [Instructions](#3-browse-your-cluster)  |
 | **4. Scale up our cluster** | [Instructions](#4-scale-up-our-cluster)  |
+| **5. Executing CQL** | [Instructions](#5-executing-cql)  |
+| **6. Change the Cassandra configuration** | [Instructions](#6-change-the-cassandra-configuration)  |
 
 ## 1. Install Cass Operator
 
@@ -561,7 +563,6 @@ kubectl -n cass-operator get persistentVolumes
 kubectl -n cass-operator get pod cluster1-dc1-default-sts-1 -o yaml
 ```
 
-
 **✅ Step 4d. Execute the command to login to a pod with SSH**
 ```bash
 kubectl -n cass-operator exec -it cluster1-dc1-default-sts-0  -- /bin/bash
@@ -582,8 +583,11 @@ UN  10.244.5.4  90.77 KiB  1            5.6%              5ad18392-14cd-47bb-a2a
 UN  10.244.1.3  91.34 KiB  1            76.9%             ee712d14-401d-4db6-b7c7-126197f5fe78  default
 UN  10.244.2.3  114.89 KiB  1            17.4%             ae2fe508-dde0-43c2-ad14-42973e6c9821  default
 ```
+[🏠 Back to Table of Contents](#exercises)
 
-**✅ Step 4f. Execute the command to login ton `cqlsh`**
+## 5. Executing CQL
+
+**✅ Step 5a. Execute the command to login ton `cqlsh`**
 ```bash
 cqlsh cluster1-dc1-service.cass-operator -u cluster1-superuser -p h5iMHm8RpoOfSXUXNiGT-WPfJa7tbwV9plj4ITYwHyghxJlQO2ySUQ
 ```
@@ -595,7 +599,7 @@ Use HELP for help.
 cluster1-superuser@cqlsh> 
 ```
 
-**✅ Step 4g. Describe the keyspace `killvideo1`**
+**✅ Step 5b. Describe the keyspace `killvideo1`**
 ```sql
 describe keyspace killrvideo1;
 ```
@@ -650,12 +654,12 @@ CREATE TABLE killrvideo1.videos (
     AND speculative_retry = '99PERCENTILE';
 ```
 
-**✅ Step 4h. Change the replication factor of `killvideo1`**
+**✅ Step 5c. Change the replication factor of `killvideo1`**
 ```sql
 alter keyspace killrvideo1 with replication={'class':'NetworkTopologyStrategy', 'dc1':3};
 ```
 
-**✅ Step 4i. Describe the keyspace `killvideo1`**
+**✅ Step 5d. Describe the keyspace `killvideo1`**
 ```sql
 describe keyspace killrvideo1
 ```
@@ -665,7 +669,7 @@ CREATE KEYSPACE killrvideo1 WITH replication = {'class': 'NetworkTopologyStrateg
 // [...]
 ```
 
-**✅ Step 4j. Set the consistency level to `QUORUM`**
+**✅ Step 5e. Set the consistency level to `QUORUM`**
 ```bash
 cluster1-superuser@cqlsh> CONSISTENCY QUORUM;
 ```
@@ -674,7 +678,7 @@ cluster1-superuser@cqlsh> CONSISTENCY QUORUM;
 Consistency level set to QUORUM.
 ```
 
-**✅ Step 4k. Enable tracing in CQLSH console**
+**✅ Step 5f. Enable tracing in CQLSH console**
 ```bash
 cluster1-superuser@cqlsh> tracing on;
 ```
@@ -683,7 +687,7 @@ cluster1-superuser@cqlsh> tracing on;
 Now Tracing is enabled
 ```
 
-**✅ Step 4l. Show a record from the table `videos`**
+**✅ Step 5g. Show a record from the table `videos`**
 ```sql
 select * from killrvideo1.videos WHERE videoid=99999999-3333-3333-3333-333333333333;
 ```
@@ -705,15 +709,16 @@ reparing statement [Native-Transport-Requests-1] | 2020-04-24 13:01:27.327000 | 
 reading data from /10.244.1.3 [Nat
 ```
 
-**✅ Step 4m. Exit both `cqlsh` and the pod to go back to kubectl**
+**✅ Step 5h. Exit both `cqlsh` and the pod to go back to kubectl**
 ```bash
 exit
 exit
 ```
+[🏠 Back to Table of Contents](#exercises)
 
-## 5 - Change the Cassandra Configuration
+## 6. Change the Cassandra Configuration
 
-**✅ Step 5a. Use diff to show new config**
+**✅ Step 6a. Use diff to show new config**
 ```bash
 diff ./cassandra/13-cassandra-cluster-3nodes.yaml ./cassandra/14-cassandra-cluster-3nodes-newconfig.yaml 
 ```
@@ -723,12 +728,12 @@ diff ./cassandra/13-cassandra-cluster-3nodes.yaml ./cassandra/14-cassandra-clust
 >       commitlog_sync_period_in_ms: 11000
 ```
 
-**✅ Step 5b. Apply the configuration**
+**✅ Step 6b. Apply the configuration**
 ```bash
 kubectl -n cass-operator apply -f ./cassandra/14-cassandra-cluster-3nodes-newconfig.yaml 
 ```
 
-**✅ Step 5c. Watch the rolling update of the operator**
+**✅ Step 6c. Watch the rolling update of the operator**
 ```bash
 watch kubectl -n cass-operator get pod
 ```
@@ -770,7 +775,7 @@ cluster1-dc1-default-sts-2       2/2     Running    0          2m31s
 ---
 ```
 
-**✅ Step 5d. Describe the datacenter resource**
+**✅ Step 6d. Describe the datacenter resource**
 ```bash
 kubectl -n cass-operator describe pods cluster1-dc1-default-sts-0
 ```
