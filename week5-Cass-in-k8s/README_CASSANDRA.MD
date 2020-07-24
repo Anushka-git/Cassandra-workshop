@@ -14,10 +14,10 @@ If at any point you need to naviagte to one of the other sections use the links 
 
 | Title  | Description | Type |
 |---|---|---|
-| Installation and prerequisites | [Instructions](./README.MD) | Required |
-| **Working with the Cassandra Operator** | [Instructions](./README_CASSANDRA.MD)  | Required |
-| Metrics in Prometheus & Grafana | [Instructions](./README_METRICS.MD)  | Required |
-| K8s Dashboard | [Instructions](./README_DASHBOARD.MD)  | Bonus |
+| Installation and prerequisites | [Section](./README.MD) | Required |
+| **Working with the Cassandra Operator** | [Section](./README_CASSANDRA.MD)  | Required |
+| Metrics in Prometheus & Grafana | [Section](./README_METRICS.MD)  | Required |
+| K8s Dashboard | [Section](./README_DASHBOARD.MD)  | Bonus |
 
 ## Exercises
 

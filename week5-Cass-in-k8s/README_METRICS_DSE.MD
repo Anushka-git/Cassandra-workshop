@@ -1,8 +1,36 @@
-![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/00-screenplay.png?raw=true)
+![banner](https://raw.githubusercontent.com/DataStax-Academy/cassandra-workshop-series/master/materials/images/banner2.png)
 
-# Monitor a Cluster
+# ✨Cassandra in Kubernetes✨
 
-At this point we expect you to have successfully complete section #0 and section #1. Section #2 is all about visualization and optional.
+[![License Apache2](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)
+[![Discord](https://img.shields.io/discord/685554030159593522)](https://discord.com/widget?id=685554030159593522&theme=dark)
+
+# Monitor a Cluster with the Metrics Collector
+
+At this point we expect you to have successfully completed sections **_Installation and prerequisites_** and **_Working with the Cassandra Operator_**. This section is all about visualization and is required if you wish to use metrics collection otherwise you don't technically need it to operate your cluster.
+
+## Sections
+If at any point you need to naviagte to one of the other sections use the links provided in the following table. You are currently in the **_Metrics in Prometheus & Grafana_** section.
+
+| Title  | Description | Type |
+|---|---|---|
+| Installation and prerequisites | [Section](./README.MD) | Required |
+| Working with the Cassandra Operator | [Section](./README_CASSANDRA.MD)  | Required |
+| **Metrics in Prometheus & Grafana** | [Section](./README_METRICS.MD)  | Required |
+| K8s Dashboard | [Section](./README_DASHBOARD.MD)  | Bonus |
+
+## Exercises
+
+| Title  | Description
+|---|---|
+| **1. Clean up cluster defined in previous sections** | [Instructions](#1-clean-up-cluster-defined-in-previous-sections)  |
+| **2. Install Operator Lifecycle Manager (OLM)** | [Instructions](#2-install-operator-lifecycle-manager-(olm))  |
+| **3. Install Prometheus Operator** | [Instructions](#3-install-prometheus-operator)  |
+| **4. Install Grafana Operator** | [Instructions](#4-install-grafana-operator)  |
+| **5. Start DSE Cluster** | [Instructions](#5-start-dse-cluster)  |
+| **6. Browse DSE Cluster** | [Instructions](#6-browse-dse-cluster)  |
+| **7. Blow your mind** | [Instructions](#7-blow-your-mind)  |
+| **8. Stop and clean up** | [Instructions](#8-stop-and-clean-up)  |
 
 ## 1. Clean up cluster defined in previous sections
 
@@ -10,7 +38,7 @@ In this section we want to illustrate the `Dse Metrics Exporter`. As such we wou
 
 📘 **1a. Check what's new in the yaml file**
 ```bash
-diff ./1-cassandra/14-cassandra-cluster-3nodes-newconfig.yaml ./1-cassandra/15-cassandra-cluster-stop.yaml 
+diff ./cassandra/14-cassandra-cluster-3nodes-newconfig.yaml ./cassandra/15-cassandra-cluster-stop.yaml 
 ```
 📗 **Expected output**
 ```
@@ -22,7 +50,7 @@ diff ./1-cassandra/14-cassandra-cluster-3nodes-newconfig.yaml ./1-cassandra/15-c
 ```
 📘 **1b. Properly stop the Cassandra `dc1` datacenter**
 ```bash
-kubectl -n cass-operator apply -f ./1-cassandra/15-cassandra-cluster-stop.yaml
+kubectl -n cass-operator apply -f ./cassandra/15-cassandra-cluster-stop.yaml
 ```
 📘 **1c. Monitor progression in the command line**
 ```bash
@@ -30,7 +58,7 @@ watch kubectl -n cass-operator get pods
 ```
 📘 **1d. Delete the Cassandra `dc1` datacenter**
 ```bash
-kubectl -n cass-operator delete -f ./1-cassandra/15-cassandra-cluster-stop.yaml
+kubectl -n cass-operator delete -f ./cassandra/15-cassandra-cluster-stop.yaml
 ```
 📘 **1e. Monitor progression in the command line**
 ```bash
@@ -40,6 +68,8 @@ watch kubectl -n cass-operator get pods
 ```
 kubectl get svc -n cass-operator --show-labels=true
 ```
+[🏠 Back to Table of Contents](#exercises)
+
 ## 2. Install Operator Lifecycle Manager (OLM)
 
 This project is a component of the Operator Framework, an open source toolkit to manage Kubernetes native applications, called Operators, in an effective, automated, and scalable way. Read more in the introduction blog post and learn about practical use cases at OLM-Book.
@@ -54,7 +84,7 @@ echo $namespace
 
 📘 **2b.Install OLM**
 ```bash
-./3-prometheus_grafana/install-olm.sh 0.14.1
+./prometheus_grafana/install-olm.sh 0.14.1
 ```
 📗 **Expected output**
 ```
@@ -85,6 +115,7 @@ Package server phase: Installing
 Package server phase: Succeeded
 deployment "packageserver" successfully rolled out
 ```
+[🏠 Back to Table of Contents](#exercises)
 
 ## 3. Install Prometheus Operator
 
@@ -95,19 +126,19 @@ The Prometheus Operator makes the Prometheus configuration Kubernetes native and
 📘 **3a. Install Operator**
 
 ```bash
-kubectl -n cass-operator create -f ./3-prometheus_grafana/prometheus/operator.yaml
+kubectl -n cass-operator create -f ./prometheus_grafana/prometheus/operator.yaml
 ```
 
 📘 **3b. Install the instance of prometheus**
 ```
-kubectl -n cass-operator apply -f ./3-prometheus_grafana/prometheus/instance.yaml
+kubectl -n cass-operator apply -f ./prometheus_grafana/prometheus/instance.yaml
 ```
 
 📘 **3c. Install Service Monitor**
 ```
-kubectl -n cass-operator apply -f ./3-prometheus_grafana/prometheus/service_monitor.yaml
+kubectl -n cass-operator apply -f ./prometheus_grafana/prometheus/service_monitor.yaml
 ```
-
+[🏠 Back to Table of Contents](#exercises)
 
 ## 4. Install Grafana Operator
 
@@ -119,27 +150,27 @@ A Kubernetes Operator based on the Operator SDK for creating and managing Grafan
 
 📘 **4a. Install Operator**
 ```bash
-kubectl -n cass-operator create -f ./3-prometheus_grafana/grafana/operator.yaml
+kubectl -n cass-operator create -f ./prometheus_grafana/grafana/operator.yaml
 ```
 
 📘 **4b.Install DataSource to read from prometheus**
 ```bash
-kubectl -n cass-operator create -f ./3-prometheus_grafana/grafana/datasource.yaml
+kubectl -n cass-operator create -f ./prometheus_grafana/grafana/datasource.yaml
 ```
 
 📘 **4c.Install dashboards for DSE and prometheus**
 ```bash
-kubectl -n cass-operator apply -f ./3-prometheus_grafana/grafana/dse-analytics.dashboard.yaml
-kubectl -n cass-operator apply -f ./3-prometheus_grafana/grafana/dse-cluster-condensed.dashboard.yaml
-kubectl -n cass-operator apply -f ./3-prometheus_grafana/grafana/dse-cluster-metrics.dashboard.yaml
-kubectl -n cass-operator apply -f ./3-prometheus_grafana/grafana/dse-search-cluster.dashboard.yaml 
-kubectl -n cass-operator apply -f ./3-prometheus_grafana/grafana/prometheus-metrics.dashboard.yaml 
-kubectl -n cass-operator apply -f ./3-prometheus_grafana/grafana/system-metrics.dashboard.yaml
+kubectl -n cass-operator apply -f ./prometheus_grafana/grafana/dse-analytics.dashboard.yaml
+kubectl -n cass-operator apply -f ./prometheus_grafana/grafana/dse-cluster-condensed.dashboard.yaml
+kubectl -n cass-operator apply -f ./prometheus_grafana/grafana/dse-cluster-metrics.dashboard.yaml
+kubectl -n cass-operator apply -f ./prometheus_grafana/grafana/dse-search-cluster.dashboard.yaml 
+kubectl -n cass-operator apply -f ./prometheus_grafana/grafana/prometheus-metrics.dashboard.yaml 
+kubectl -n cass-operator apply -f ./prometheus_grafana/grafana/system-metrics.dashboard.yaml
 ```
 
 📘 **4d.Install Grafana instance**
 ```bash
-kubectl -n cass-operator apply -f ./3-prometheus_grafana/grafana/instance.yaml
+kubectl -n cass-operator apply -f ./prometheus_grafana/grafana/instance.yaml
 ```
 
 📘 **4e. Show labels in the namespace**
@@ -167,6 +198,8 @@ kubectl -n cass-operator port-forward --address 0.0.0.0 service/grafana-service 
 ```bash
 kubectl -n cass-operator port-forward --address 0.0.0.0 service/prometheus-operated 9090:9090&
 ```
+[🏠 Back to Table of Contents](#exercises)
+
 
 ## 5. Start DSE Cluster
 
@@ -176,7 +209,7 @@ This could be quite CPU consuming reduce the size of the cluster to `1` if you i
 
 
 ```bash
-kubectl -n cass-operator apply -f ./3-prometheus_grafana/dse/dse-mini.yaml
+kubectl -n cass-operator apply -f ./prometheus_grafana/dse/dse-mini.yaml
 ```
 
 📘 **5b.Watch evolution it might need some time**
@@ -196,6 +229,7 @@ cluster2-dc2-default-sts-2   2/2     Running   0          6m55s
 ```bash
 kubectl -n cass-operator logs cluster2-dc2-default-sts-0 -c cassandra
 ```
+[🏠 Back to Table of Contents](#exercises)
 
 ## 6. Browse DSE Cluster
 
@@ -259,8 +293,10 @@ DESCRIBE KEYSPACES;
 exit
 exit
 ```
+[🏠 Back to Table of Contents](#exercises)
 
-## 7. Let's blow your mind
+
+## 7. Blow your mind
 
 If you show UI from grafana and prometheus you might notice than the screens are still empty. This is **expected**. Let's enable metrics collections by adding a couple of line to the dse cluster definition `yaml`
 
@@ -273,7 +309,7 @@ If you show UI from grafana and prometheus you might notice than the screens are
 
 📘 **7a. Apply this configuration**
 ```bash
-kubectl -n cass-operator apply -f ./3-prometheus_grafana/dse/dse-mini-enablemetrics.yaml
+kubectl -n cass-operator apply -f ./prometheus_grafana/dse/dse-mini-enablemetrics.yaml
 ```
 
 📘 **7b. Apply this configuration**
@@ -316,19 +352,21 @@ Grafana should be available at `http://localhost:3000` but it mays vary on the c
 
 ![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/grafana-up.png?raw=true)
 
+[🏠 Back to Table of Contents](#exercises)
+
 ## 8. Stop and clean up
 
 As before you may want to stop the cluster properly and then stop everything else with the following commands.
 
 ## 8a. Stop the DSE cluster properly
 ```bash
-kubectl -n cass-operator apply -f ./3-prometheus_grafana/dse/dse-mini-stop.yaml
+kubectl -n cass-operator apply -f ./prometheus_grafana/dse/dse-mini-stop.yaml
 ```
 
 ## 8b. Delete resources associated
 
 ```bash
-kubectl -n cass-operator delete -f ./3-prometheus_grafana/dse/dse-mini-stop.yaml
+kubectl -n cass-operator delete -f ./prometheus_grafana/dse/dse-mini-stop.yaml
 ```
 
 ## 8c. Delete the namespace and clean up the rest of the artifacts
@@ -341,8 +379,8 @@ kubectl delete ns cass-operator
 kind delete cluster  --name=kind-cassandra
 ```
 
-## Congratulations, your are done.
+[🏠 Back to Table of Contents](#sections)
 
-**We love your feedback, please consider to stay with us for the Mentimeter live survey**
+[🏠Back to HOME workshop](https://github.com/DataStax-Academy/cassandra-workshop-series)
 
-![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/welldone.jpg?raw=true)
+THE END.

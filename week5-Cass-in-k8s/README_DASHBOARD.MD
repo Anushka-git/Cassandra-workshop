@@ -1,10 +1,25 @@
-![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/00-screenplay.png?raw=true)
+![banner](https://raw.githubusercontent.com/DataStax-Academy/cassandra-workshop-series/master/materials/images/banner2.png)
+
+# ✨Cassandra in Kubernetes✨
+
+[![License Apache2](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)
+[![Discord](https://img.shields.io/discord/685554030159593522)](https://discord.com/widget?id=685554030159593522&theme=dark)
 
 # Browse Cass Operator in Dashboard UI
 
-At this point we expect you to have successfully complete section #0 and section #1.
+At this point we expect you to have successfully completed sections **_Installation and prerequisites_** and **_Working with the Cassandra Operator_**.
 
 **WARNING**: `DUE TO LIMITATIONS IN THE KUBERNETES DASHBOARD UI THIS PART CANNOT BE EXECUTED IN THE CLOUD-BASES ENVIRONMENTS, THE TOKEN GENERATION SEEMS KO.`
+
+## Sections
+If at any point you need to naviagte to one of the other sections use the links provided in the following table. You are currently in the **_K8s Dashboard_** section.
+
+| Title  | Description | Type |
+|---|---|---|
+| Installation and prerequisites | [Section](./README.MD) | Required |
+| Working with the Cassandra Operator | [Section](./README_CASSANDRA.MD)  | Required |
+| Metrics in Prometheus & Grafana | [Section](./README_METRICS.MD)  | Required |
+| **K8s Dashboard** | [Section](./README_DASHBOARD.MD)  | Bonus |
 
 ## 1. Install Dahsboard UI
 
@@ -35,11 +50,11 @@ deployment.apps/dashboard-metrics-scraper created
 📘 **1b.Execute the commands to create both account and roles**
 
 ```bash
-kubectl apply -f ./2-dashboard/22-create-dashboard-account.yaml
+kubectl apply -f ./dashboard/22-create-dashboard-account.yaml
 ```
 
 ```bash
-kubectl apply -f ./2-dashboard/23-create-dashboard-role.yaml
+kubectl apply -f ./dashboard/23-create-dashboard-role.yaml
 ```
 
 📘 **1c.Generate a token**
@@ -64,7 +79,7 @@ Copy/Paste the generated token to login you can now browse the UI
 ## 2. Browse Dahsboard UI
 
 
-📘 **2a.Welcome page (namespace `default`)**
+📘 **2a. Welcome page (namespace `default`)**
 
 ![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/21-ui-default.png?raw=true)
 
@@ -87,7 +102,9 @@ You can now kill the `kubectl proxy` and delete the resources associated to gain
 kubectl delete -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta8/aio/deploy/recommended.yaml
 ```
 
-## Congratulations, your are done for this exercise.
+[🏠 Back to Table of Contents](#sections)
 
-![OK](https://github.com/DataStax-Academy/kubernetes-workshop-online/blob/master/4-materials/images/welldone.jpg?raw=true)
+[🏠Back to HOME workshop](https://github.com/DataStax-Academy/cassandra-workshop-series)
+
+THE END.
 
